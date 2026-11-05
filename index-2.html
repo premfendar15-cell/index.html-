@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Handmade Store | Store Manager</title>
+<style>
+:root{--navy:#183b63;--blue:#2463a6;--pale:#edf4fb;--ink:#172638;--muted:#687789;--line:#e3eaf1;--bg:#f5f8fc;--green:#16845b;--red:#c34444;--amber:#a96a09}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(120deg,#163a63,#286eae);color:white;padding:22px max(18px,calc((100% - 1180px)/2));display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.brand h1{font-size:22px;margin:0 0 3px}.brand p{margin:0;color:#d8e8f7;font-size:13px}
+header button{background:#fff;color:var(--navy);border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer}
+main{max-width:1180px;margin:22px auto;padding:0 16px 40px}
+nav{display:flex;gap:8px;overflow:auto;margin-bottom:18px}
+nav button{border:1px solid var(--line);background:white;color:var(--muted);padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer;white-space:nowrap}
+nav button.active{background:var(--navy);border-color:var(--navy);color:white}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.card,.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:17px;box-shadow:0 3px 14px #173b6308}
+.metric-label{font-size:13px;color:var(--muted)}.metric{font-size:25px;font-weight:800;margin-top:5px}.metric-note{font-size:12px;color:var(--muted);margin-top:3px}
+.panel{margin-bottom:16px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+h2{font-size:17px;margin:0}.muted{color:var(--muted)}.small{font-size:12px}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap}
+button,.btn{font:inherit}.primary{background:var(--blue);color:white;border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}
+.secondary{background:var(--pale);color:var(--navy);border:1px solid #d8e6f4;border-radius:9px;padding:9px 12px;font-weight:700;cursor:pointer}
+.danger{background:#fff0f0;color:var(--red);border:1px solid #f4d4d4;border-radius:8px;padding:7px 10px;cursor:pointer}
+input,select{width:100%;border:1px solid #d8e1eb;border-radius:8px;padding:10px 11px;background:white;color:var(--ink);font:inherit;min-width:0}
+label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:0 0 5px}
+.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.field{min-width:0}.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:13px}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:#fbfcfe}
+td select{padding:7px;font-size:12px;min-width:115px}.pill{display:inline-block;padding:4px 8px;border-radius:30px;font-size:11px;font-weight:800;background:#edf2f7;color:#526276}.pill.green{background:#e5f6ee;color:var(--green)}.pill.amber{background:#fff4df;color:var(--amber)}.pill.red{background:#ffeded;color:var(--red)}
+.empty{text-align:center;padding:28px;color:var(--muted)}.hidden{display:none!important}
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}.stock-low{color:var(--red);font-weight:800}
+input[type="date"]{max-width:180px}.notice{background:#fff8e9;border:1px solid #f3dfb5;color:#795313;padding:11px 13px;border-radius:10px;font-size:12px;margin-bottom:15px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
+@media(max-width:800px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
+@media(max-width:460px){header{padding:18px}.cards{gap:8px}.card{padding:13px}.metric{font-size:21px}.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><h1 id="storeTitle">Smart Handmade Store</h1><p>Lippan Art &amp; Handmade Decorations · Orders · Stock · Payments · Sales</p></div>
+ <button id="renameBtn">✎ Edit store name</button>
+</header>
+<main>
+ <div class="notice">Your store data is saved in this browser on this device. Use <b>Export backup</b> regularly to keep a copy. This starter app does not process online payments.</div>
+ <nav>
+  <button class="active" data-tab="dashboard">Dashboard</button>
+  <button data-tab="orders">Customer orders</button>
+  <button data-tab="inventory">Inventory</button>
+  <button data-tab="sales">Daily sales</button>
+ </nav>
+
+ <section id="dashboard" class="tab">
+  <div class="cards">
+   <div class="card"><div class="metric-label">Today's paid sales</div><div class="metric" id="todaySales">₹0</div><div class="metric-note">Payments received today</div></div>
+   <div class="card"><div class="metric-label">Pending payments</div><div class="metric" id="pendingTotal">₹0</div><div class="metric-note" id="pendingCount">0 orders awaiting payment</div></div>
+   <div class="card"><div class="metric-label">Active orders</div><div class="metric" id="activeOrders">0</div><div class="metric-note">Not yet delivered</div></div>
+   <div class="card"><div class="metric-label">Products in stock</div><div class="metric" id="stockCount">0</div><div class="metric-note" id="lowStockCount">0 low-stock products</div></div>
+  </div>
+  <div class="two-col">
+   <div class="panel"><div class="panel-head"><h2>Recent orders</h2><button class="secondary" data-go="orders">View all</button></div><div id="recentOrders"></div></div>
+   <div class="panel"><div class="panel-head"><h2>Low-stock alert</h2><button class="secondary" data-go="inventory">Manage stock</button></div><div id="lowStockList"></div></div>
+  </div>
+ </section>
+
+ <section id="orders" class="tab hidden">
+  <div class="panel">
+   <div class="panel-head"><div><h2>Add customer order</h2><div class="muted small">Stock is deducted automatically when an order is added.</div></div></div>
+   <form id="orderForm">
+    <div class="form-grid">
+     <div class="field"><label>Customer name *</label><input id="customer" required placeholder="Customer name"></div>
+     <div class="field"><label>Phone (optional)</label><input id="phone" inputmode="tel" placeholder="Mobile number"></div>
+     <div class="field"><label>Product *</label><select id="orderProduct" required></select></div>
+     <div class="field"><label>Quantity *</label><input id="quantity" type="number" min="1" step="1" value="1" required></div>
+     <div class="field"><label>Unit price (₹) *</label><input id="unitPrice" type="number" min="0" step=".01" required></div>
+     <div class="field"><label>Payment status</label><select id="payment"><option>Pending</option><option>Paid</option><option>Part-paid</option></select></div>
+     <div class="field"><label>Amount received (₹)</label><input id="received" type="number" min="0" step=".01" value="0"></div>
+     <div class="field"><label>Delivery status</label><select id="delivery"><option>Order received</option><option>Preparing</option><option>Ready to dispatch</option><option>Out for delivery</option><option>Delivered</option></select></div>
+    </div>
+    <div class="form-actions"><button type="reset" class="secondary">Clear</button><button class="primary" type="submit">＋ Add order</button></div>
+   </form>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>All customer orders</h2><input id="orderSearch" placeholder="Search customer or product" style="max-width:260px"></div><div class="table-wrap" id="ordersTable"></div></div>
+ </section>
+
+ <section id="inventory" class="tab hidden">
+  <div class="panel">
+   <div class="panel-head"><div><h2>Add a homemade product</h2><div class="muted small">Set your selling price and available quantity.</div></div></div>
+   <form id="productForm">
+    <div class="form-grid">
+     <div class="field"><label>Product name *</label><input id="productName" required placeholder="e.g. Handmade candles"></div>
+     <div class="field"><label>Selling price (₹) *</label><input id="productPrice" type="number" min="0" step=".01" required></div>
+     <div class="field"><label>Opening stock *</label><input id="productStock" type="number" min="0" step="1" required></div>
+     <div class="field"><label>Low-stock alert at</label><input id="productThreshold" type="number" min="0" step="1" value="5"></div>
+    </div>
+    <div class="form-actions"><button class="primary" type="submit">＋ Add product</button></div>
+   </form>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Inventory management</h2><span class="muted small">Use + / − to adjust stock</span></div><div class="table-wrap" id="inventoryTable"></div></div>
+ </section>
+
+ <section id="sales" class="tab hidden">
+  <div class="panel">
+   <div class="panel-head"><div><h2>Daily sales report</h2><div class="muted small">Paid amount received on the selected order date.</div></div><input type="date" id="salesDate"></div>
+   <div class="cards" style="margin-bottom:0">
+    <div class="card"><div class="metric-label">Paid sales</div><div class="metric" id="reportPaid">₹0</div></div>
+    <div class="card"><div class="metric-label">Orders placed</div><div class="metric" id="reportOrders">0</div></div>
+    <div class="card"><div class="metric-label">Amount pending</div><div class="metric" id="reportPending">₹0</div></div>
+    <div class="card"><div class="metric-label">Items sold</div><div class="metric" id="reportItems">0</div></div>
+   </div>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Orders for selected day</h2><button class="secondary" id="exportCsv">Export CSV</button></div><div id="dailyTable"></div></div>
+ </section>
+ <footer>Homemade Store Manager · Simple offline-friendly store tracker</footer>
+</main>
+<script>
+const KEY='smartHandmadeStoreManager_v1';
+const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+const money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2});
+let data;
+try{data=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!data||!Array.isArray(data.products)||!Array.isArray(data.orders)) data={name:'Smart Handmade Store',products:[],orders:[]};
+const save=()=>{localStorage.setItem(KEY,JSON.stringify(data));render()};
+const el=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const due=o=>Math.max(0,Number(o.total)-Number(o.received||0));
+function setTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('hidden',x.id!==name));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.go)));
+el('renameBtn').onclick=()=>{const n=prompt('Enter your store name:',data.name);if(n&&n.trim()){data.name=n.trim();save()}};
+function render(){
+ el('storeTitle').textContent=data.name;
+ const t=today(), todays=data.orders.filter(o=>o.date===t);
+ const paid=todays.reduce((s,o)=>s+Number(o.received||0),0);
+ const pending=data.orders.reduce((s,o)=>s+due(o),0);
+ const active=data.orders.filter(o=>o.delivery!=='Delivered').length;
+ const low=data.products.filter(p=>Number(p.stock)<=Number(p.threshold));
+ el('todaySales').textContent=money(paid);el('pendingTotal').textContent=money(pending);
+ el('pendingCount').textContent=data.orders.filter(o=>due(o)>0).length+' orders with balance due';
+ el('activeOrders').textContent=active;el('stockCount').textContent=data.products.reduce((s,p)=>s+Number(p.stock),0);
+ el('lowStockCount').textContent=low.length+' low-stock products';
+ el('recentOrders').innerHTML=orderRows(data.orders.slice().reverse().slice(0,5),false);
+ el('lowStockList').innerHTML=low.length?low.map(p=>`<p><b>${esc(p.name)}</b> <span class="stock-low">· ${p.stock} left</span></p>`).join(''):'<div class="empty">All products are above their alert level.</div>';
+ const opts=data.products.map(p=>`<option value="${p.id}">${esc(p.name)} — ${money(p.price)} (${p.stock} in stock)</option>`).join('');
+ el('orderProduct').innerHTML=opts||'<option value="">Add a product first</option>';
+ if(data.products.length===0) el('orderProduct').disabled=true; else el('orderProduct').disabled=false;
+ el('inventoryTable').innerHTML=data.products.length?`<table><thead><tr><th>Product</th><th>Price</th><th>Available</th><th>Alert at</th><th>Adjust</th><th></th></tr></thead><tbody>${data.products.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${money(p.price)}</td><td class="${p.stock<=p.threshold?'stock-low':''}">${p.stock}</td><td>${p.threshold}</td><td><button class="secondary" data-stock="-1" data-id="${p.id}">−</button> <button class="secondary" data-stock="1" data-id="${p.id}">＋</button></td><td><button class="danger" data-delete-product="${p.id}">Delete</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">No products yet. Add your first homemade product above.</div>';
+ el('inventoryTable').querySelectorAll('[data-stock]').forEach(b=>b.onclick=()=>{const p=data.products.find(x=>x.id===b.dataset.id);p.stock=Math.max(0,Number(p.stock)+Number(b.dataset.stock));save()});
+ el('inventoryTable').querySelectorAll('[data-delete-product]').forEach(b=>b.onclick=()=>{const p=data.products.find(x=>x.id===b.dataset.deleteProduct);if(confirm('Delete '+p.name+' from inventory? Existing orders will remain.')){data.products=data.products.filter(x=>x.id!==p.id);save()}});
+ drawOrders();drawSales();
+}
+function orderRows(list,controls=true){
+ if(!list.length)return '<div class="empty">No orders to show yet.</div>';
+ return `<table><thead><tr><th>Order / Date</th><th>Customer</th><th>Product</th><th>Total</th><th>Received / Due</th>${controls?'<th>Payment</th><th>Delivery</th>':''}</tr></thead><tbody>${list.map(o=>`<tr><td><b>${esc(o.id)}</b><br><span class="muted small">${esc(o.date)}</span></td><td>${esc(o.customer)}<br><span class="muted small">${esc(o.phone||'')}</span></td><td>${esc(o.product)} × ${o.qty}</td><td>${money(o.total)}</td><td>${money(o.received)} / <span class="${due(o)>0?'stock-low':''}">${money(due(o))}</span></td>${controls?`<td><select data-payment-id="${o.id}"><option ${o.payment==='Pending'?'selected':''}>Pending</option><option ${o.payment==='Part-paid'?'selected':''}>Part-paid</option><option ${o.payment==='Paid'?'selected':''}>Paid</option></select></td><td><select data-delivery-id="${o.id}">${['Order received','Preparing','Ready to dispatch','Out for delivery','Delivered'].map(s=>`<option ${o.delivery===s?'selected':''}>${s}</option>`).join('')}</select></td>`:''}</tr>`).join('')}</tbody></table>`;
+}
+function drawOrders(){
+ const q=el('orderSearch').value.toLowerCase();
+ const list=data.orders.slice().reverse().filter(o=>(o.customer+' '+o.product+' '+o.id).toLowerCase().includes(q));
+ el('ordersTable').innerHTML=orderRows(list,true);
+ el('ordersTable').querySelectorAll('[data-payment-id]').forEach(s=>s.onchange=()=>{const o=data.orders.find(x=>x.id===s.dataset.paymentId);o.payment=s.value;if(s.value==='Paid')o.received=Number(o.total);if(s.value==='Pending')o.received=0;if(s.value==='Part-paid'&&Number(o.received)>=Number(o.total))o.received=Math.max(0,Number(o.total)-1);save()});
+ el('ordersTable').querySelectorAll('[data-delivery-id]').forEach(s=>s.onchange=()=>{const o=data.orders.find(x=>x.id===s.dataset.deliveryId);o.delivery=s.value;save()});
+}
+el('orderSearch').addEventListener('input',drawOrders);
+el('orderProduct').addEventListener('change',()=>{const p=data.products.find(x=>x.id===el('orderProduct').value);if(p)el('unitPrice').value=p.price});
+el('orderForm').addEventListener('submit',e=>{
+ e.preventDefault();const p=data.products.find(x=>x.id===el('orderProduct').value),qty=Number(el('quantity').value),price=Number(el('unitPrice').value),received=Number(el('received').value);
+ if(!p){alert('Please add a product first.');return}if(qty<1||!Number.isInteger(qty)){alert('Enter a whole-number quantity.');return}
+ if(qty>p.stock){alert('Not enough stock. Available: '+p.stock);return}
+ const total=qty*price;if(price<0||received<0||received>total){alert('Check the price and amount received.');return}
+ const payment=received===0?'Pending':received>=total?'Paid':'Part-paid';
+ data.orders.push({id:'ORD-'+Date.now().toString().slice(-7),date:today(),customer:el('customer').value.trim(),phone:el('phone').value.trim(),product:p.name,productId:p.id,qty,unitPrice:price,total,received,payment,delivery:el('delivery').value});
+ p.stock-=qty;el('orderForm').reset();el('quantity').value=1;el('received').value=0;save();alert('Order added and inventory updated.');
+});
+el('productForm').addEventListener('submit',e=>{
+ e.preventDefault();const name=el('productName').value.trim(),price=Number(el('productPrice').value),stock=Number(el('productStock').value),threshold=Number(el('productThreshold').value);
+ if(!name||price<0||stock<0||threshold<0||!Number.isInteger(stock)||!Number.isInteger(threshold)){alert('Please check product details.');return}
+ data.products.push({id:'P-'+Date.now(),name,price,stock,threshold});el('productForm').reset();el('productThreshold').value=5;save();
+});
+function drawSales(){
+ const date=el('salesDate').value||today();const list=data.orders.filter(o=>o.date===date);
+ el('reportPaid').textContent=money(list.reduce((s,o)=>s+Number(o.received||0),0));
+ el('reportOrders').textContent=list.length;el('reportPending').textContent=money(list.reduce((s,o)=>s+due(o),0));
+ el('reportItems').textContent=list.reduce((s,o)=>s+Number(o.qty),0);
+ el('dailyTable').innerHTML=orderRows(list.slice().reverse(),false);
+}
+el('salesDate').value=today();el('salesDate').addEventListener('change',drawSales);
+el('exportCsv').onclick=()=>{
+ const date=el('salesDate').value||today(),list=data.orders.filter(o=>o.date===date);
+ const rows=[['Order ID','Date','Customer','Phone','Product','Quantity','Total','Received','Due','Payment','Delivery'],...list.map(o=>[o.id,o.date,o.customer,o.phone,o.product,o.qty,o.total,o.received,due(o),o.payment,o.delivery])];
+ const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='daily-sales-'+date+'.csv';a.click();URL.revokeObjectURL(a.href);
+};
+render();
+</script>
+</body>
+</html>
